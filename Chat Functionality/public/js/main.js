@@ -9,7 +9,7 @@ socket.on('message', message =>{
     outputMessage(message);
 
     //Scroll Top
-    chatMessages.scrollTop =    chatMessages.scrollHeight;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
 //Message Submit
@@ -18,7 +18,11 @@ chatForm .addEventListener('submit', (e)=>{
 
     const msg = e.target.elements.msg.value;
 
-    console.log(msg);
+    socket.emit('chatMessage', msg);
+
+    //Clear input
+    e.target.elements.msg.value = '';
+    e.target.elements.msg.focus();
 });
 
 //Output to DOM
