@@ -19,6 +19,10 @@ io.on('connection', socket => {
 
     socket.on('joinRoom', ({username, room}) => {
 
+        if (typeof(room) == "undefined"){
+            room = Math.floor(Math.random() * 101);
+        }        
+
         const user = userJoin(socket.id, username, room);
 
         socket.join(user.room);

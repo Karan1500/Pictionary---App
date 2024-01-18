@@ -6,14 +6,56 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
   <title>ChatCord App</title>
+
+  <style>
+    .drawing-column{
+        width: 540px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ccc; 
+        border-radius: 8px;
+    }
+
+    .drawing-tools button,
+    #clearCanvasBtn {
+        background-color: #7E22CE;
+        color: #fff;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .canvas-container {
+        position: relative;
+        margin-bottom: 10px;
+    }
+
+    canvas {
+        width: 500px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: crosshair;
+    }
+
+    .drawing-tools label,
+    .drawing-tools input {
+        display: block;
+        margin-bottom: 10px;
+    }
+</style>
+
 </head>
 <body>
   <div class="chat-container">
+
     <header class="chat-header">
       <h1><i class="fas fa-smile"></i> ChatCord</h1>
       <a href="index.html" class="btn">Leave Room</a>
     </header>
+
     <main class="chat-main">
+
       <div class="chat-sidebar">
         <h3><i class="fas fa-comments"></i> Room Name:</h3>
         <h2 id="room-name">
@@ -23,41 +65,122 @@
         <!-- <ul id="users">
           <li>Brad</li>
           <li>John</li>
-          <li>Mary</li>
-          <li>Paul</li>
-          <li>Mike</li>
         </ul> -->
       </div>
-      <div class="chat-messages">
-					<!-- <div class="message">
-						<p class="meta">Brad <span>9:12pm</span></p>
-						<p class="text">
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi,
-							repudiandae.
-						</p>
-					</div>
-					<div class="message">
-						<p class="meta">Mary <span>9:15pm</span></p>
-						<p class="text">
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi,
-							repudiandae.
-						</p>
-					</div> -->
+
+      <div class="new">
+        <div class="drawing-column">
+          <div class="word-display">
+              <h2>Word to Guess:</h2>
+              <p id="wordToGuess">Apple</p>
+          </div>
+          <div class="canvas-container">
+              <canvas id="drawingCanvas" width="400" height="300"></canvas>
+          </div>
+          <div class="drawing-tools">
+              <label for="colorSelector">Brush Color:</label>
+              <input type="color" id="colorSelector" value="#7E22CE">
+              <label for="sizeSelector">Brush Size:</label>
+              <input type="range" id="sizeSelector" min="1" max="10" value="5">
+              <button id="clearCanvasBtn">Clear Canvas</button>
+          </div>
+        </div>
+  
+        <div>
+          <div class="chat-messages">
+            <!-- <div class="message">
+              <p class="meta">Brad <span>9:12pm</span></p>
+              <p class="text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi,
+                repudiandae.
+              </p>
+            </div>
+            <div class="message">
+              <p class="meta">Mary <span>9:15pm</span></p>
+              <p class="text">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi,
+                repudiandae.
+              </p>
+            </div> -->
+        </div>
+  
+        <div class="chat-form-container">
+          <form id="chat-form">
+            <input
+              id="msg"
+              type="text"
+              placeholder="Enter Message"
+              required
+              autocomplete="off"
+            />
+            <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+          </form>
+        </div>
+  
+      </div>  
+  
       </div>
-    </main>
-    <div class="chat-form-container">
-      <form id="chat-form">
-        <input
-          id="msg"
-          type="text"
-          placeholder="Enter Message"
-          required
-          autocomplete="off"
-        />
-        <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
-      </form>
-    </div>
+
+  </main>
+
+
+
+
   </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const canvas = document.getElementById("drawingCanvas");
+        const context = canvas.getContext("2d");
+        const colorSelector = document.getElementById("colorSelector");
+        const sizeSelector = document.getElementById("sizeSelector");
+        const clearCanvasBtn = document.getElementById("clearCanvasBtn");
+
+        let isDrawing = false;
+
+        // Add event listeners for drawing
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("mousemove", draw);
+
+        // Event listener for clear button
+        clearCanvasBtn.addEventListener("click", clearCanvas);
+
+        // Function to start drawing
+        function startDrawing(e) {
+            isDrawing = true;
+            draw(e); // Start drawing from the current position
+        }
+
+        // Function to stop drawing
+        function stopDrawing() {
+            isDrawing = false;
+            context.beginPath(); // Reset path
+        }
+
+        // Function to draw on the canvas
+        function draw(e) {
+            if (!isDrawing) return;
+
+            context.lineWidth = sizeSelector.value;
+            context.lineCap = "round";
+            context.strokeStyle = colorSelector.value;
+
+            context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+
+        // Function to clear the canvas
+        function clearCanvas() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    });
+</script>
+
+
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.11.2/qs.min.js" integrity="sha512-vCegEXqPUYpZsTGz2lk0jaQ1psxtFeniVJACAXhMVxuoYa/N4nZkjoVFOxLwP7uGeQOoemiz7DQrIpRTj4IBPw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
