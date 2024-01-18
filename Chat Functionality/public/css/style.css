@@ -38,6 +38,10 @@ a {
 	font-size: 17px;
 }
 
+.create-room-btn{
+	margin-bottom: 2rem;
+}
+
 /* Chat Page */
 
 .chat-container {
