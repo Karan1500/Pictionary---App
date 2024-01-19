@@ -12,19 +12,19 @@ const io = socketio(server);
 // Set public as a static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-const botName = 'ChatCord Bot ';
+const botName = 'Pen&Play Bot ';
 
 // Run when a client connects
 io.on('connection', socket => {
 
     socket.on('joinRoom', ({ username, room }) => {
-        
+
         const user = userJoin(socket.id, username, room);
 
         socket.join(user.room);
 
         // Welcome current user
-        socket.emit('message', formatMessage(botName, 'Welcome to ChatCord'));
+        socket.emit('message', formatMessage(botName, 'Welcome to Pen&Play'));
 
         // Broadcast when a user joins
         socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${username} has joined the chat`));
