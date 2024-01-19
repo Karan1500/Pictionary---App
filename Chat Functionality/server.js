@@ -3,37 +3,33 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
-const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require('./utils/users');
+const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-//Set public as static folder
+// Set public as a static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 const botName = 'ChatCord Bot ';
 
-//Run when client connects
+// Run when a client connects
 io.on('connection', socket => {
 
-    socket.on('joinRoom', ({username, room}) => {
-
-        if (typeof(room) == "undefined"){
-            room = Math.floor(Math.random() * 101);
-        }        
-
+    socket.on('joinRoom', ({ username, room }) => {
+        
         const user = userJoin(socket.id, username, room);
 
         socket.join(user.room);
 
-        //Welcome current user
-        socket.emit('message', formatMessage(botName,'Welcome to ChatCord'));
+        // Welcome current user
+        socket.emit('message', formatMessage(botName, 'Welcome to ChatCord'));
 
-        //Broadcast when a user joins
+        // Broadcast when a user joins
         socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${username} has joined the chat`));
 
-        //send users and room info
+        // Send users and room info
         io.to(user.room).emit('roomUsers', {
             room: user.room,
             users: getRoomUsers(user.room)
@@ -42,25 +38,34 @@ io.on('connection', socket => {
 
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id);
+        io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
+    });
 
-        io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));    
-    })
-
-    //Runs when a client disconnects
+    // Runs when a client disconnects
     socket.on('disconnect', () => {
         const user = userLeave(socket.id);
 
-        if(user){
-            io.to(user.room).emit('message',formatMessage(botName, `${user.username} has left the chat`));
+        if (user) {
+            io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
 
-             //send users and room info
+            // Send users and room info
             io.to(user.room).emit('roomUsers', {
                 room: user.room,
                 users: getRoomUsers(user.room)
             });
         }
-    }); 
+    });
 });
+
+// Generate a random room function
+function generateRandomRoom() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
 
 const PORT = 3000 || process.env.PORT;
 
