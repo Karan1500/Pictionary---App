@@ -8,17 +8,17 @@
   <title>Pen&Play</title>
 
   <style>
-    .drawing-column{
+    .drawing-column {
         width: 540px;
         padding: 10px;
         background-color: #fff;
-        border: 1px solid #ccc; 
+        border: 1px solid #ccc;
         border-radius: 8px;
     }
 
     .drawing-tools button,
     #clearCanvasBtn {
-        background-color: #7E22CE;
+        background-color: #7e22ce;
         color: #fff;
         padding: 8px 12px;
         border: none;
@@ -32,7 +32,8 @@
     }
 
     canvas {
-        width: 500px;
+        width: 100%; /* Make the canvas take up the full width of its container */
+        height: 350px; /* Set the desired height */
         border: 1px solid #ccc;
         border-radius: 4px;
         cursor: crosshair;
@@ -62,10 +63,10 @@
           <!-- JavaScript -->
         </h2>
         <h3><i class="fas fa-users"></i> Users</h3>
-        <!-- <ul id="users">
-          <li>Brad</li>
-          <li>John</li>
-        </ul> -->
+        <ul id="users">
+          <!-- <li>Brad</li>
+          <li>John</li> -->
+        </ul>
       </div>
 
       <div class="new">
@@ -75,7 +76,7 @@
               <p id="wordToGuess">Apple</p>
           </div>
           <div class="canvas-container">
-              <canvas id="drawingCanvas" width="400" height="300"></canvas>
+              <canvas id="drawingCanvas" width="400" height="350"></canvas>
           </div>
           <div class="drawing-tools">
               <label for="colorSelector">Brush Color:</label>
@@ -131,53 +132,57 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const canvas = document.getElementById("drawingCanvas");
-        const context = canvas.getContext("2d");
-        const colorSelector = document.getElementById("colorSelector");
-        const sizeSelector = document.getElementById("sizeSelector");
-        const clearCanvasBtn = document.getElementById("clearCanvasBtn");
+    const canvas = document.getElementById("drawingCanvas");
+    const context = canvas.getContext("2d");
+    const colorSelector = document.getElementById("colorSelector");
+    const sizeSelector = document.getElementById("sizeSelector");
+    const clearCanvasBtn = document.getElementById("clearCanvasBtn");
 
-        let isDrawing = false;
+    let isDrawing = false;
 
-        // Add event listeners for drawing
-        canvas.addEventListener("mousedown", startDrawing);
-        canvas.addEventListener("mouseup", stopDrawing);
-        canvas.addEventListener("mousemove", draw);
+    // Add event listeners for drawing
+    canvas.addEventListener("mousedown", startDrawing);
+    document.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mousemove", draw);
 
-        // Event listener for clear button
-        clearCanvasBtn.addEventListener("click", clearCanvas);
+    // Event listener for clear button
+    clearCanvasBtn.addEventListener("click", clearCanvas);
 
-        // Function to start drawing
-        function startDrawing(e) {
-            isDrawing = true;
-            draw(e); // Start drawing from the current position
-        }
+    // Function to start drawing
+    function startDrawing(e) {
+        isDrawing = true;
+        draw(e); // Start drawing from the current position
+    }
 
-        // Function to stop drawing
-        function stopDrawing() {
-            isDrawing = false;
-            context.beginPath(); // Reset path
-        }
+    // Function to stop drawing
+    function stopDrawing() {
+        isDrawing = false;
+        context.beginPath(); // Reset path
+    }
 
-        // Function to draw on the canvas
-        function draw(e) {
-            if (!isDrawing) return;
+    // Function to draw on the canvas
+    function draw(e) {
+        if (!isDrawing) return;
 
-            context.lineWidth = sizeSelector.value;
-            context.lineCap = "round";
-            context.strokeStyle = colorSelector.value;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-            context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            context.stroke();
-            context.beginPath();
-            context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        }
+        context.lineWidth = sizeSelector.value;
+        context.lineCap = "round";
+        context.strokeStyle = colorSelector.value;
 
-        // Function to clear the canvas
-        function clearCanvas() {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    });
+        context.lineTo(x, y);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(x, y);
+    }
+
+    // Function to clear the canvas
+    function clearCanvas() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+});   
 </script>
 
 
