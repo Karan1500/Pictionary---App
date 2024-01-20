@@ -154,27 +154,22 @@
 
     let isDrawing = false;
 
-    // Add event listeners for drawing
     canvas.addEventListener("mousedown", startDrawing);
     document.addEventListener("mouseup", stopDrawing);
     canvas.addEventListener("mousemove", draw);
 
-    // Event listener for clear button
     clearCanvasBtn.addEventListener("click", clearCanvas);
 
-    // Function to start drawing
     function startDrawing(e) {
         isDrawing = true;
-        draw(e); // Start drawing from the current position
+        draw(e); 
     }
 
-    // Function to stop drawing
     function stopDrawing() {
         isDrawing = false;
-        context.beginPath(); // Reset path
+        context.beginPath(); 
     }
 
-    // Function to draw on the canvas
     function draw(e) {
         if (!isDrawing) return;
 
@@ -192,7 +187,6 @@
         context.moveTo(x, y);
     }
 
-    // Function to clear the canvas
     function clearCanvas() {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }

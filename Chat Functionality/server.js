@@ -9,12 +9,10 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-// Set public as a static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 const botName = 'Pen&Play Bot ';
 
-// Run when a client connects
 io.on('connection', socket => {
 
     socket.on('joinRoom', ({ username, room }) => {
@@ -23,13 +21,10 @@ io.on('connection', socket => {
 
         socket.join(user.room);
 
-        // Welcome current user
         socket.emit('message', formatMessage(botName, 'Welcome to Pen&Play'));
 
-        // Broadcast when a user joins
         socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${username} has joined the chat`));
 
-        // Send users and room info
         io.to(user.room).emit('roomUsers', {
             room: user.room,
             users: getRoomUsers(user.room)
@@ -41,7 +36,6 @@ io.on('connection', socket => {
         io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
     });
 
-    // Runs when a client disconnects
     socket.on('disconnect', () => {
         const user = userLeave(socket.id);
 
@@ -57,7 +51,6 @@ io.on('connection', socket => {
     });
 });
 
-// Generate a random room function
 function generateRandomRoom() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
