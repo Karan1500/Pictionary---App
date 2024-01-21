@@ -42,7 +42,6 @@ io.on('connection', socket => {
         if (user) {
             io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
 
-            // Send users and room info
             io.to(user.room).emit('roomUsers', {
                 room: user.room,
                 users: getRoomUsers(user.room)
@@ -50,15 +49,6 @@ io.on('connection', socket => {
         }
     });
 });
-
-function generateRandomRoom() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 6; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
 
 const PORT = 3000 || process.env.PORT;
 
