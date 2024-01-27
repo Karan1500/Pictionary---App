@@ -69,3 +69,91 @@ function generateRandomRoom() {
     }
     return result;
 }
+
+socket.on('mouseDownData', data => {
+    const canvas = document.getElementById("drawingCanvas");
+    const context = canvas.getContext("2d");
+    context.moveTo(data.x, data.y);
+});
+
+socket.on('clearCanvasData', data => {
+    const canvas = document.getElementById("drawingCanvas");
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+socket.on('getData', data => {
+    const canvas = document.getElementById("drawingCanvas");
+    const context = canvas.getContext("2d");
+    const colorSelector = document.getElementById("colorSelector");
+    const sizeSelector = document.getElementById("sizeSelector");
+    const clearCanvasBtn = document.getElementById("clearCanvasBtn");
+
+    const rect = canvas.getBoundingClientRect();
+    const x = data.x - rect.left;
+    const y = data.y - rect.top;
+
+    context.lineWidth = sizeSelector.value;
+    context.lineCap = "round";
+    context.strokeStyle = colorSelector.value;
+
+    context.lineTo(data.x, data.y);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(data.x, data.y);
+});
+
+document.addEventListener("DOMContentLoaded", ()=>{
+    const canvas = document.getElementById("drawingCanvas");
+    const context = canvas.getContext("2d");
+    const colorSelector = document.getElementById("colorSelector");
+    const sizeSelector = document.getElementById("sizeSelector");
+    const clearCanvasBtn = document.getElementById("clearCanvasBtn");
+
+    let isDrawing = false;
+
+    canvas.addEventListener("mousedown", startDrawing);
+    document.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mousemove", draw);
+
+    clearCanvasBtn.addEventListener("click", clearCanvas);
+
+    function startDrawing(e){
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      isDrawing = true;
+      socket.emit('mouseDown', {x, y});
+      draw(e);
+    }
+
+    function stopDrawing(){
+      isDrawing = false;
+      context.beginPath();
+    }
+
+    function draw(e){
+      if(!isDrawing)
+        return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      context.lineWidth = sizeSelector.value;
+      context.lineCap = "round";
+      context.strokeStyle = colorSelector.value;
+
+      context.lineTo(x, y);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(x, y);
+
+      socket.emit("draw", {x, y});
+    }
+
+    function clearCanvas(){
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      socket.emit('clearCanvas', null);
+    }
+  });

@@ -31,6 +31,21 @@ io.on('connection', socket => {
         });
     });
 
+    socket.on('draw', data => {
+        const user = getCurrentUser(socket.id);
+        io.to(user.room).emit('getData', { x: data.x, y: data.y });
+    });
+
+    socket.on('mouseDown', data => {
+        const user = getCurrentUser(socket.id);
+        io.to(user.room).emit('mouseDownData', { x: data.x, y: data.y });
+    });
+
+    socket.on('clearCanvas', data => {
+        const user = getCurrentUser(socket.id);
+        io.to(user.room).emit('clearCanvasData', data);
+    });
+
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id);
         io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));

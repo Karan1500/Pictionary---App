@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="js/main.js">
   <title>Pen&Play</title>
 </head>
 
@@ -86,57 +87,6 @@
 
   </main>
   </div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", ()=>{
-    const canvas = document.getElementById("drawingCanvas");
-    const context = canvas.getContext("2d");
-    const colorSelector = document.getElementById("colorSelector");
-    const sizeSelector = document.getElementById("sizeSelector");
-    const clearCanvasBtn = document.getElementById("clearCanvasBtn");
-
-    let isDrawing = false;
-
-    canvas.addEventListener("mousedown", startDrawing);
-    document.addEventListener("mouseup", stopDrawing);
-    canvas.addEventListener("mousemove", draw);
-
-    clearCanvasBtn.addEventListener("click", clearCanvas);
-
-    function startDrawing(e){
-      isDrawing = true;
-      draw(e);
-    }
-
-    function stopDrawing(){
-      isDrawing = false;
-      context.beginPath();
-    }
-
-    function draw(e){
-      if(!isDrawing)
-        return;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      context.lineWidth = sizeSelector.value;
-      context.lineCap = "round";
-      context.strokeStyle = colorSelector.value;
-
-      context.lineTo(x, y);
-      context.stroke();
-      context.beginPath();
-      context.moveTo(x, y);
-    }
-
-    function clearCanvas(){
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }
-  });
-</script>
-
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.11.2/qs.min.js" integrity="sha512-vCegEXqPUYpZsTGz2lk0jaQ1psxtFeniVJACAXhMVxuoYa/N4nZkjoVFOxLwP7uGeQOoemiz7DQrIpRTj4IBPw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="/socket.io/socket.io.js"></script>
