@@ -93,9 +93,9 @@ socket.on('getData', data => {
     const x = data.x - rect.left;
     const y = data.y - rect.top;
 
-    context.lineWidth = sizeSelector.value;
+    context.lineWidth = data.p;
     context.lineCap = "round";
-    context.strokeStyle = colorSelector.value;
+    context.strokeStyle = data.q;
 
     context.lineTo(data.x, data.y);
     context.stroke();
@@ -148,8 +148,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
       context.stroke();
       context.beginPath();
       context.moveTo(x, y);
-
-      socket.emit("draw", {x, y});
+      
+      const p = context.lineWidth;
+      const q = context.strokeStyle;
+      socket.emit("draw", {x, y, p, q});
     }
 
     function clearCanvas(){

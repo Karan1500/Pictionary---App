@@ -33,7 +33,7 @@ io.on('connection', socket => {
 
     socket.on('draw', data => {
         const user = getCurrentUser(socket.id);
-        io.to(user.room).emit('getData', { x: data.x, y: data.y });
+        io.to(user.room).emit('getData', { x: data.x, y: data.y, p: data.p, q: data.q });
     });
 
     socket.on('mouseDown', data => {
