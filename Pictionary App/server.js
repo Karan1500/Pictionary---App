@@ -15,6 +15,10 @@ const botName = 'Pen&Play Bot ';
 
 io.on('connection', socket => {
 
+    let usersInTurnOrder = [];
+    let currentTurnIndex = 0;
+    let isGameInProgress = false;
+
     socket.on('joinRoom', ({ username, room }) => {
 
         const user = userJoin(socket.id, username, room);
@@ -29,7 +33,56 @@ io.on('connection', socket => {
             room: user.room,
             users: getRoomUsers(user.room)
         });
+
+        usersInTurnOrder = getRoomUsers(user.room);
+        console.log(usersInTurnOrder.length);
+        socket.on('startTheGame', (e) =>{
+            if(e==1)
+            {
+                // console.log(e);
+                startGameLoop(user.room);
+            }   
+        });
+        
     });
+
+    console.log(usersInTurnOrder.length);
+
+    function startGameLoop(room) {
+        isGameInProgress = true;
+
+        const gameLoop = setInterval(() => {
+            nextTurn(room);
+
+            if (allUsersFinishedDrawing(room)) {
+                clearInterval(gameLoop);
+                isGameInProgress = false;
+            }
+        }, 8000); // 20 seconds timeout for each turn
+
+        // Start the first turn immediately
+        console.log(usersInTurnOrder.length);
+        console.log(currentTurnIndex);
+        io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
+    }
+
+    function nextTurn(room) {
+        if (usersInTurnOrder.length > 0) {
+            currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
+            io.to(room).emit('nextTurn');
+            setTimeout(() => {
+                io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
+            }, 1000); // Delay for 1 second to allow the client to handle the 'nextTurn' event
+        }
+    }
+
+    function allUsersFinishedDrawing(room) {
+        // Check your conditions for determining if all users have finished drawing
+        // For example, check if each user has set a 'finishedDrawing' flag
+        // Return true when all users have finished, and the game loop will stop
+        // For simplicity, let's assume all users have finished drawing after a certain number of turns
+        return currentTurnIndex >= usersInTurnOrder.length;
+    }
 
     socket.on('draw', data => {
         const user = getCurrentUser(socket.id);
@@ -61,6 +114,10 @@ io.on('connection', socket => {
                 room: user.room,
                 users: getRoomUsers(user.room)
             });
+        }
+
+        if (usersInTurnOrder[currentTurnIndex] && usersInTurnOrder[currentTurnIndex].id === socket.id) {
+            nextTurn(user.room);
         }
     });
 });

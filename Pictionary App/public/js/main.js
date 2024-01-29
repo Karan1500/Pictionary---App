@@ -2,16 +2,27 @@ const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
+const srartGame  = document.getElementById('startGame');
 
-let { username, room } = Qs.parse(location.search, {
+let { username, room, start } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 });
 
 const socket = io();
 
+const userArray = [];
+
 if (!room) {
     room = generateRandomRoom();
     window.location.href = `${window.location.origin}/chat.html?username=${username}&room=${room}`;
+    start = true;
+}
+
+startGame.addEventListener('click', funcStart);
+
+function funcStart(){
+    // const p = 1;
+    socket.emit('startTheGame', 1);
 }
 
 socket.emit('joinRoom', { username, room });
@@ -19,6 +30,7 @@ socket.emit('joinRoom', { username, room });
 socket.on('roomUsers', ({ room, users }) => {
     outputRoomName(room);
     outputUsers(users);
+    userArray = users;
 });
 
 socket.on('message', message => {
@@ -118,13 +130,34 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
     clearCanvasBtn.addEventListener("click", clearCanvas);
 
+    // Enable or disable drawing functionality based on turn
+    socket.on('yourTurn', () => {
+        isMyTurn = true;
+        console.log("It's your turn to draw!");
+        // Enable drawing functionality or update UI as needed
+    });
+
+    socket.on('nextTurn', () => {
+        isMyTurn = false;
+        console.log("Next person's turn to draw.");
+        // Disable drawing functionality or update UI as needed
+    });
+
     function startDrawing(e){
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      isDrawing = true;
-      socket.emit('mouseDown', {x, y});
-      draw(e);
+    //   isDrawing = true;
+    //   socket.emit('mouseDown', {x, y});
+    //   draw(e);
+        if (isMyTurn) {
+            isDrawing = true;
+            socket.emit('mouseDown', { x, y });
+            draw(e);
+        } else {
+            // It's not your turn, display a message or perform some action
+            console.log("It's not your turn to draw.");
+        }
     }
 
     function stopDrawing(){
@@ -158,4 +191,4 @@ document.addEventListener("DOMContentLoaded", ()=>{
       context.clearRect(0, 0, canvas.width, canvas.height);
       socket.emit('clearCanvas', null);
     }
-  });
+});
