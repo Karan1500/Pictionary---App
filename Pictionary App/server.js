@@ -13,11 +13,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const botName = 'Pen&Play Bot ';
 
-io.on('connection', socket => {
+var usersInTurnOrder = [];
+var currentTurnIndex = 0;
+var isGameInProgress = false;
 
-    let usersInTurnOrder = [];
-    let currentTurnIndex = 0;
-    let isGameInProgress = false;
+io.on('connection', socket => {
 
     socket.on('joinRoom', ({ username, room }) => {
 
@@ -36,6 +36,7 @@ io.on('connection', socket => {
 
         usersInTurnOrder = getRoomUsers(user.room);
         console.log(usersInTurnOrder.length);
+        p = usersInTurnOrder.length;
         socket.on('startTheGame', (e) =>{
             if(e==1)
             {
@@ -43,10 +44,11 @@ io.on('connection', socket => {
                 startGameLoop(user.room);
             }   
         });
+        // console.log(usersInTurnOrder.length);
         
     });
 
-    console.log(usersInTurnOrder.length);
+    // console.log(usersInTurnOrder.length);
 
     function startGameLoop(room) {
         isGameInProgress = true;
@@ -61,8 +63,6 @@ io.on('connection', socket => {
         }, 8000); // 20 seconds timeout for each turn
 
         // Start the first turn immediately
-        console.log(usersInTurnOrder.length);
-        console.log(currentTurnIndex);
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
     }
 
