@@ -21,7 +21,6 @@ if (!room) {
 startGame.addEventListener('click', funcStart);
 
 function funcStart(){
-    // const p = 1;
     socket.emit('startTheGame', 1);
 }
 

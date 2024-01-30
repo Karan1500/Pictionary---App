@@ -15,7 +15,8 @@ const botName = 'Pen&Play Bot ';
 
 var usersInTurnOrder = [];
 var currentTurnIndex = 0;
-var isGameInProgress = false;
+var e = 0;
+var currentRoom=0;
 
 io.on('connection', socket => {
 
@@ -35,45 +36,58 @@ io.on('connection', socket => {
         });
 
         usersInTurnOrder = getRoomUsers(user.room);
-        console.log(usersInTurnOrder.length);
-        p = usersInTurnOrder.length;
-        socket.on('startTheGame', (e) =>{
-            if(e==1)
-            {
-                // console.log(e);
-                startGameLoop(user.room);
-            }   
-        });
-        // console.log(usersInTurnOrder.length);
-        
+        currentRoom = user.room;
+
     });
 
-    // console.log(usersInTurnOrder.length);
+    socket.on('startTheGame', (e) =>{
+        if(e==1)
+        {
+            currentTurnIndex = 0;
+            startGameLoop(currentRoom);
+        }   
+    });
 
     function startGameLoop(room) {
-        isGameInProgress = true;
 
         const gameLoop = setInterval(() => {
             nextTurn(room);
 
             if (allUsersFinishedDrawing(room)) {
-                clearInterval(gameLoop);
-                isGameInProgress = false;
+                console.log(usersInTurnOrder.length);
+                clearInterval(gameLoop);    
+                // currentTurnIndex = 0;
+                // socket.on('startTheGame', (e) =>{
+                //     if(e==1)
+                //     {
+                //         startGameLoop(currentRoom);
+                //     }   
+                // });
             }
-        }, 8000); // 20 seconds timeout for each turn
 
-        // Start the first turn immediately
+        }, 10000);
+
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
     }
 
+    // console.log("I'm executed");
+
     function nextTurn(room) {
+        const data = 1;
+        clearCanvasFunc();
         if (usersInTurnOrder.length > 0) {
             currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
             io.to(room).emit('nextTurn');
             setTimeout(() => {
                 io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
-            }, 1000); // Delay for 1 second to allow the client to handle the 'nextTurn' event
+            }, 3000);
         }
+    }
+
+    function clearCanvasFunc(){
+        const data = 1;
+        socket.emit('clearCanvasData', data);
+        socket.broadcast.emit('clearCanvasData', data);
     }
 
     function allUsersFinishedDrawing(room) {
