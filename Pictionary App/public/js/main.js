@@ -3,10 +3,13 @@ const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 const srartGame  = document.getElementById('startGame');
+const randWord = document.getElementById('wordToGuess');
 
 let { username, room, start } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 });
+
+// var things = ['Rock', 'Paper', 'Scissor'];
 
 const socket = io();
 
@@ -49,6 +52,16 @@ chatForm.addEventListener('submit', (e) => {
     e.target.elements.msg.value = '';
     e.target.elements.msg.focus();
 });
+
+
+socket.on('displayWord', (word) => {
+    randWord.innerText = word;
+});
+
+socket.on('displayWordLength', (letters) => {
+    randWord.innerText = `Number of letters: ${letters}`;
+});
+
 
 function outputMessage(message) {
     const div = document.createElement('div');
@@ -134,6 +147,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
         isMyTurn = true;
         console.log("It's your turn to draw!");
         // Enable drawing functionality or update UI as needed
+        // outputWord(p);
     });
 
     socket.on('nextTurn', () => {

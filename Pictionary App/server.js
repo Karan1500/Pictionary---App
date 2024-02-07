@@ -50,7 +50,21 @@ io.on('connection', socket => {
 
     function startGameLoop(room) {
 
+        io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
+        const currentUser = usersInTurnOrder[currentTurnIndex];
+            var things = ['Rock', 'Paper', 'Scissor'];
+            const word = things[Math.floor(Math.random() * things.length)];
+            const letters = word.length;
+            io.to(currentUser.id).emit('displayWord', word);
+            for (let i = 0; i < usersInTurnOrder.length; i++) {
+                if (i !== currentTurnIndex) {
+                    io.to(usersInTurnOrder[i].id).emit('displayWordLength', letters);
+                }
+            }
+            currentTurnIndex++;
+        
         const gameLoop = setInterval(() => {
+
             nextTurn(room);
 
             if (allUsersFinishedDrawing(room)) {
@@ -66,19 +80,26 @@ io.on('connection', socket => {
             }
 
         }, 10000);
-
-        io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
     }
 
     // console.log("I'm executed");
 
     function nextTurn(room) {
-        const data = 1;
         clearCanvasFunc();
         if (usersInTurnOrder.length > 0) {
             currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
             io.to(room).emit('nextTurn');
             setTimeout(() => {
+                const currentUser = usersInTurnOrder[currentTurnIndex];
+                var things = ['Rock', 'Paper', 'Scissor'];
+                const word = things[Math.floor(Math.random() * things.length)];
+                const letters = word.length;
+                io.to(currentUser.id).emit('displayWord', word);
+                for (let i = 0; i < usersInTurnOrder.length; i++) {
+                    if (i !== currentTurnIndex) {
+                        io.to(usersInTurnOrder[i].id).emit('displayWordLength', letters);
+                    }
+                }
                 io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
             }, 3000);
         }
