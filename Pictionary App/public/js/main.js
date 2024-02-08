@@ -10,6 +10,7 @@ let { username, room, start } = Qs.parse(location.search, {
 });
 
 // var things = ['Rock', 'Paper', 'Scissor'];
+var colorDiv = 2;
 
 const socket = io();
 
@@ -35,7 +36,7 @@ socket.on('roomUsers', ({ room, users }) => {
     userArray = users;
 });
 
-socket.on('message', message => {
+socket.on('message', (message) => {
     console.log(message);
     outputMessage(message);
 
@@ -62,6 +63,10 @@ socket.on('displayWordLength', (letters) => {
     randWord.innerText = `Number of letters: ${letters}`;
 });
 
+socket.on('msgStatus', (p) => {
+    // console.log("love u");
+    colorDiv = p;
+});
 
 function outputMessage(message) {
     const div = document.createElement('div');
@@ -71,6 +76,12 @@ function outputMessage(message) {
         ${message.textMessage}
     </p>`;
     document.querySelector('.chat-messages').appendChild(div);
+    if (colorDiv === 1) {
+        div.style.backgroundColor = 'rgb(0, 255, 0)';
+    } 
+    else if(colorDiv === 0){
+        div.style.backgroundColor = 'rgb(251, 143, 143)';
+    }
 }
 
 function outputRoomName(room) {

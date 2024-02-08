@@ -18,6 +18,9 @@ var currentTurnIndex = 0;
 var e = 0;
 var currentRoom=0;
 
+let currentRandomWord = '';
+let correctGuesses = {};
+
 io.on('connection', socket => {
 
     socket.on('joinRoom', ({ username, room }) => {
@@ -52,16 +55,17 @@ io.on('connection', socket => {
 
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
-            var things = ['Rock', 'Paper', 'Scissor'];
-            const word = things[Math.floor(Math.random() * things.length)];
-            const letters = word.length;
-            io.to(currentUser.id).emit('displayWord', word);
-            for (let i = 0; i < usersInTurnOrder.length; i++) {
-                if (i !== currentTurnIndex) {
-                    io.to(usersInTurnOrder[i].id).emit('displayWordLength', letters);
-                }
+        var things = ['Rock', 'Paper', 'Scissor'];
+        const word = things[Math.floor(Math.random() * things.length)];
+        currentRandomWord = word.toLowerCase();
+        const letters = word.length;
+        io.to(currentUser.id).emit('displayWord', word);
+        for (let i = 0; i < usersInTurnOrder.length; i++) {
+            if (i !== currentTurnIndex) {
+                io.to(usersInTurnOrder[i].id).emit('displayWordLength', letters);
             }
-            currentTurnIndex++;
+        }
+        currentTurnIndex++;
         
         const gameLoop = setInterval(() => {
 
@@ -93,6 +97,7 @@ io.on('connection', socket => {
                 const currentUser = usersInTurnOrder[currentTurnIndex];
                 var things = ['Rock', 'Paper', 'Scissor'];
                 const word = things[Math.floor(Math.random() * things.length)];
+                currentRandomWord = word.toLowerCase();
                 const letters = word.length;
                 io.to(currentUser.id).emit('displayWord', word);
                 for (let i = 0; i < usersInTurnOrder.length; i++) {
@@ -136,6 +141,16 @@ io.on('connection', socket => {
 
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id);
+        const message = msg.trim().toLowerCase();
+        var p = 0;
+        if(message === currentRandomWord){
+            correctGuesses[user.username] = true;
+            p=1;
+        }
+        else    
+            correctGuesses[user.username] = false;
+
+        io.to(user.room).emit('msgStatus', p);
         io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
     });
 

@@ -102,12 +102,13 @@ a {
 	height: 87%;
 	overflow-y: scroll;
 }
-
 .chat-messages .message {
 	padding: 10px;
 	margin-bottom: 15px;
 	background-color: var(--light-color);
 	border-radius: 5px;
+	/* color: rgb(0, 255, 0); */
+	/* color: rgb(251, 143, 143) */
 }
 
 .chat-messages .message .meta {
