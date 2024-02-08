@@ -20,6 +20,7 @@ var currentRoom=0;
 
 let currentRandomWord = '';
 let correctGuesses = {};
+let totalScore = {};
 
 io.on('connection', socket => {
 
@@ -53,6 +54,8 @@ io.on('connection', socket => {
 
     function startGameLoop(room) {
 
+        currentTurnIndex = 0;
+        console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
         var things = ['Rock', 'Paper', 'Scissor'];
@@ -65,16 +68,18 @@ io.on('connection', socket => {
                 io.to(usersInTurnOrder[i].id).emit('displayWordLength', letters);
             }
         }
-        currentTurnIndex++;
         
         const gameLoop = setInterval(() => {
 
-            nextTurn(room);
+            correctGuesses = {};
 
-            if (allUsersFinishedDrawing(room)) {
-                console.log(usersInTurnOrder.length);
+            if(currentTurnIndex < usersInTurnOrder.length - 1)
+                nextTurn(room);
+
+            if (currentTurnIndex === usersInTurnOrder.length - 1) {
+                // console.log(usersInTurnOrder.length);
                 clearInterval(gameLoop);    
-                // currentTurnIndex = 0;
+                currentTurnIndex = 0;
                 // socket.on('startTheGame', (e) =>{
                 //     if(e==1)
                 //     {
@@ -91,7 +96,9 @@ io.on('connection', socket => {
     function nextTurn(room) {
         clearCanvasFunc();
         if (usersInTurnOrder.length > 0) {
-            currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
+            currentTurnIndex ++ ;
+            console.log('Its me');
+            console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
             io.to(room).emit('nextTurn');
             setTimeout(() => {
                 const currentUser = usersInTurnOrder[currentTurnIndex];
@@ -144,12 +151,13 @@ io.on('connection', socket => {
         const message = msg.trim().toLowerCase();
         var p = 0;
         if(message === currentRandomWord){
-            correctGuesses[user.username] = true;
+            correctGuesses[user.username] = 500;
+            totalScore[user.username] += 500;
             p=1;
             msg = `${user.username} guessed it right !!`;
         }
         else    
-            correctGuesses[user.username] = false;
+            correctGuesses[user.username] = 0;
 
         io.to(user.room).emit('msgStatus', p);
         io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
