@@ -146,6 +146,7 @@ io.on('connection', socket => {
         if(message === currentRandomWord){
             correctGuesses[user.username] = true;
             p=1;
+            msg = `${user.username} guessed it right !!`;
         }
         else    
             correctGuesses[user.username] = false;
