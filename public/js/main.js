@@ -9,8 +9,7 @@ let { username, room, start } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 });
 
-// var things = ['Rock', 'Paper', 'Scissor'];
-var colorDiv = 2;
+var colorDiv = -1;
 
 const socket = io();
 
@@ -64,7 +63,6 @@ socket.on('displayWordLength', (letters) => {
 });
 
 socket.on('msgStatus', (p) => {
-    // console.log("love u");
     colorDiv = p;
 });
 
@@ -81,6 +79,9 @@ function outputMessage(message) {
     } 
     else if(colorDiv === 0){
         div.style.backgroundColor = 'rgb(251, 143, 143)';
+    }
+    else if(colorDiv === 2){
+        div.style.backgroundColor = 'yellow';
     }
 }
 
@@ -153,33 +154,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
     clearCanvasBtn.addEventListener("click", clearCanvas);
 
-    // Enable or disable drawing functionality based on turn
     socket.on('yourTurn', () => {
         isMyTurn = true;
         console.log("It's your turn to draw!");
-        // Enable drawing functionality or update UI as needed
-        // outputWord(p);
     });
 
     socket.on('nextTurn', () => {
         isMyTurn = false;
         console.log("Next person's turn to draw.");
-        // Disable drawing functionality or update UI as needed
     });
 
     function startDrawing(e){
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-    //   isDrawing = true;
-    //   socket.emit('mouseDown', {x, y});
-    //   draw(e);
         if (isMyTurn) {
             isDrawing = true;
             socket.emit('mouseDown', { x, y });
             draw(e);
         } else {
-            // It's not your turn, display a message or perform some action
             console.log("It's not your turn to draw.");
         }
     }

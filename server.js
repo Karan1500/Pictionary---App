@@ -15,8 +15,8 @@ const botName = 'Pen&Play Bot ';
 
 var usersInTurnOrder = [];
 var currentTurnIndex = 0;
-var e = 0;
 var currentRoom=0;
+var word = 'Apple';
 
 let currentRandomWord = '';
 let correctGuesses = {};
@@ -74,25 +74,22 @@ io.on('connection', socket => {
 
             correctGuesses = {};
 
+            io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
+            io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
+
             if(currentTurnIndex < usersInTurnOrder.length - 1)
                 nextTurn(room);
 
             if (currentTurnIndex === usersInTurnOrder.length - 1) {
-                // console.log(usersInTurnOrder.length);
+                setTimeout(() => {
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
+                }, 10000);
                 clearInterval(gameLoop);    
-                // currentTurnIndex = 0;
-                // socket.on('startTheGame', (e) =>{
-                //     if(e==1)
-                //     {
-                //         startGameLoop(currentRoom);
-                //     }   
-                // });
             }
 
         }, 10000);
     }
-
-    // console.log("I'm executed");
 
     function nextTurn(room) {
         clearCanvasFunc();
@@ -104,7 +101,7 @@ io.on('connection', socket => {
             setTimeout(() => {
                 const currentUser = usersInTurnOrder[currentTurnIndex];
                 var things = ['Rock', 'Paper', 'Scissor'];
-                const word = things[Math.floor(Math.random() * things.length)];
+                word = things[Math.floor(Math.random() * things.length)];
                 currentRandomWord = word.toLowerCase();
                 const letters = word.length;
                 io.to(currentUser.id).emit('displayWord', word);
@@ -125,10 +122,6 @@ io.on('connection', socket => {
     }
 
     function allUsersFinishedDrawing(room) {
-        // Check your conditions for determining if all users have finished drawing
-        // For example, check if each user has set a 'finishedDrawing' flag
-        // Return true when all users have finished, and the game loop will stop
-        // For simplicity, let's assume all users have finished drawing after a certain number of turns
         return currentTurnIndex >= usersInTurnOrder.length;
     }
 
