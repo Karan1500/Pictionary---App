@@ -56,6 +56,7 @@ io.on('connection', socket => {
 
         clearCanvasFunc();
         currentTurnIndex = 0;
+        correctGuesses = {};
         console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
@@ -72,8 +73,6 @@ io.on('connection', socket => {
         
         const gameLoop = setInterval(() => {
 
-            correctGuesses = {};
-
             io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
             io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
 
@@ -85,6 +84,12 @@ io.on('connection', socket => {
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
                 }, 10000);
+
+                for(let i=0; i<usersInTurnOrder.length; i++){
+                    console.log(usersInTurnOrder[i].username, correctGuesses[usersInTurnOrder[i].username]);
+                    // console.log(usersInTurnOrder[i].username, correctGuesses[i]);
+                }
+
                 clearInterval(gameLoop);    
             }
 
@@ -145,8 +150,12 @@ io.on('connection', socket => {
         const message = msg.trim().toLowerCase();
         var p = 0;
         if(message === currentRandomWord){
-            correctGuesses[user.username] = 500;
-            totalScore[user.username] += 500;
+            console.log("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+            correctGuesses[currentTurnIndex] = 500;
+            if(totalScore[currentTurnIndex] === 0)
+                totalScore[currentTurnIndex] = 500;
+            else
+                totalScore[currentTurnIndex] += 500;
             p=1;
             msg = `${user.username} guessed it right !!`;
         }

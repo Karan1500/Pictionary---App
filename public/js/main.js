@@ -209,3 +209,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
       socket.emit('clearCanvas', null);
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const menuBtn = document.querySelector('.menu-btn');
+    const chatSidebar = document.querySelector('.chat-sidebar');
+
+    // Add event listener to the menu button
+    menuBtn.addEventListener('click', function () {
+        // Toggle the 'show-sidebar' class on the chat-main element
+        document.querySelector('.chat-main').classList.toggle('show-sidebar');
+    });
+});

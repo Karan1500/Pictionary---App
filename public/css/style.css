@@ -241,3 +241,100 @@ a {
       color: navy;
       font-size: larger;
     }
+
+@media only screen and (max-width: 768px) {
+    .chat-main {
+        display: block;
+    }
+
+    .chat-sidebar {
+        display: none; /* Hide users column by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        background-color: var(--dark-color-b);
+        overflow-x: hidden;
+        padding-top: 60px;
+        z-index: 1;
+    }
+
+    .chat-main.show-sidebar .chat-sidebar {
+        display: block; /* Show users column when menu is opened */
+    }
+
+    .chat-main.hide-chat .chat-form-container {
+        display: none; /* Hide chat column when menu is opened */
+    }
+
+    .chat-header .btn {
+        display: none; /* Hide start game and leave room buttons */
+    }
+
+    .chat-header .open-chat-btn {
+        display: block; /* Show open chat button */
+    }
+
+    .chat-form-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--dark-color-a);
+        padding: 20px;
+    }
+
+    .open-chat-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--dark-color-a);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .open-chat-btn i {
+        transform: rotate(90deg); /* Rotate icon */
+    }
+
+    .chat-messages {
+        height: calc(100% - 160px); /* Adjust height of messages container */
+    }
+
+    .new {
+        flex-direction: column;
+    }
+
+    .drawing-column {
+        width: 100%; /* Full width for drawing column */
+    }
+
+    .word-display h3 {
+        margin-left: 0;
+        text-align: center; /* Center align word display */
+    }
+}
+
+
+.menu-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    display: block;
+}
+
+@media only screen and (min-width: 768px) {
+    .menu-btn {
+        display: none; /* Hide menu button on larger screens */
+    }
+}
