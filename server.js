@@ -54,6 +54,7 @@ io.on('connection', socket => {
 
     function startGameLoop(room) {
 
+        clearCanvasFunc();
         currentTurnIndex = 0;
         console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
@@ -79,7 +80,7 @@ io.on('connection', socket => {
             if (currentTurnIndex === usersInTurnOrder.length - 1) {
                 // console.log(usersInTurnOrder.length);
                 clearInterval(gameLoop);    
-                currentTurnIndex = 0;
+                // currentTurnIndex = 0;
                 // socket.on('startTheGame', (e) =>{
                 //     if(e==1)
                 //     {
