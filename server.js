@@ -59,6 +59,7 @@ io.on('connection', socket => {
         round = 1;
         currentTurnIndex = 0;
         correctGuesses = {};
+        totalScore = {};
         console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
@@ -75,6 +76,11 @@ io.on('connection', socket => {
 
         for (const user of usersInTurnOrder) {
             correctGuesses[user.username] = 0;
+        }
+
+        for (const user of usersInTurnOrder) {
+            // if(totalScore[user.username] < 500)
+                totalScore[user.username] = 0;
         }
         
         const gameLoop = setInterval(() => {
@@ -109,11 +115,22 @@ io.on('connection', socket => {
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 3);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, resultMessage));
 
-                }, 10000);
+                    var winnerMessage = 'Winner(s) : ';
+                    var maxi = 1;
+                    for(const user of usersInTurnOrder)
+                    {
+                        if(totalScore[user.username] > maxi)
+                            maxi = totalScore[user.username];
+                    }
+                    for(const user of usersInTurnOrder)
+                    {
+                        if(totalScore[user.username] === maxi)
+                            winnerMessage += `${user.username} `;
+                    }
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 3);
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, winnerMessage));
 
-                // for(let i=0; i<usersInTurnOrder.length; i++){
-                //     console.log(usersInTurnOrder[i].username, correctGuesses[usersInTurnOrder[i].username]);
-                // }
+                }, 10000);
 
                 clearInterval(gameLoop);    
 
@@ -180,10 +197,7 @@ io.on('connection', socket => {
         if(message === currentRandomWord){
             console.log("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
             correctGuesses[user.username] += 500;
-            if(totalScore[user.username] === 0)
-                totalScore[user.username] = 500;
-            else
-                totalScore[user.username] += 500;
+            totalScore[user.username] += 500;
             p=1;
             msg = `${user.username} guessed it right !!`;
         }
