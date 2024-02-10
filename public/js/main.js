@@ -86,6 +86,9 @@ function outputMessage(message) {
     else if(colorDiv === 3){
         div.style.backgroundColor = 'rgb(0, 255, 251)';
     }
+    else if(colorDiv === 4){
+        div.style.backgroundColor = '#fff';
+    }
 }
 
 function outputRoomName(room) {

@@ -60,7 +60,6 @@ io.on('connection', socket => {
         currentTurnIndex = 0;
         correctGuesses = {};
         totalScore = {};
-        console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
         var things = ['Rock', 'Paper', 'Scissor'];
@@ -127,7 +126,7 @@ io.on('connection', socket => {
                         if(totalScore[user.username] === maxi)
                             winnerMessage += `${user.username} `;
                     }
-                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 3);
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 4);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, winnerMessage));
 
                 }, 10000);
@@ -145,8 +144,6 @@ io.on('connection', socket => {
             currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
             if(currentTurnIndex === usersInTurnOrder.length - 1)
                 round++;
-            console.log('Its me');
-            console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
             io.to(room).emit('nextTurn');
             setTimeout(() => {
                 const currentUser = usersInTurnOrder[currentTurnIndex];
@@ -193,19 +190,21 @@ io.on('connection', socket => {
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id);
         const message = msg.trim().toLowerCase();
-        var p = 0;
-        if(message === currentRandomWord){
-            console.log("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-            correctGuesses[user.username] += 500;
-            totalScore[user.username] += 500;
-            p=1;
-            msg = `${user.username} guessed it right !!`;
-        }
-        else    
-            correctGuesses[user.username] = 0;
+        if(usersInTurnOrder[currentTurnIndex].username !== user.username)
+        {
+            var p = 0;
+            if(message === currentRandomWord){
+                correctGuesses[user.username] += 500;
+                totalScore[user.username] += 500;
+                p=1;
+                msg = `${user.username} guessed it right !!`;
+            }
+            else    
+                correctGuesses[user.username] = 0;
 
-        io.to(user.room).emit('msgStatus', p);
-        io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
+            io.to(user.room).emit('msgStatus', p);
+            io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
+        }
     });
 
     socket.on('disconnect', () => {
