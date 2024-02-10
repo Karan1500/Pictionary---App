@@ -93,6 +93,7 @@ io.on('connection', socket => {
                     {
                         resultMessage += `${user.username} : ${correctGuesses[user.username]}\n`;
                     }
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 3);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, resultMessage));
 
                 }, 10000);
