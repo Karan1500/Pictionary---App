@@ -98,9 +98,9 @@ a {
 }
 
 .chat-messages {
-	padding: 30px;
-	height: 87%;
-	overflow-y: scroll;
+    padding: 30px;
+    height: 510px; /* Set a fixed height for the chat messages container */
+    overflow-y: auto; /* Enable vertical scrolling */
 }
 .chat-messages .message {
 	padding: 10px;
