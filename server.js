@@ -61,7 +61,7 @@ io.on('connection', socket => {
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
         var things = ['Rock', 'Paper', 'Scissor'];
-        const word = things[Math.floor(Math.random() * things.length)];
+        word = things[Math.floor(Math.random() * things.length)];
         currentRandomWord = word.toLowerCase();
         const letters = word.length;
         io.to(currentUser.id).emit('displayWord', word);
@@ -69,6 +69,10 @@ io.on('connection', socket => {
             if (i !== currentTurnIndex) {
                 io.to(usersInTurnOrder[i].id).emit('displayWordLength', letters);
             }
+        }
+
+        for (const user of usersInTurnOrder) {
+            correctGuesses[user.username] = 0;
         }
         
         const gameLoop = setInterval(() => {
@@ -83,14 +87,22 @@ io.on('connection', socket => {
                 setTimeout(() => {
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
+
+                    var resultMessage = '';
+                    for(const user of usersInTurnOrder)
+                    {
+                        resultMessage += `${user.username} : ${correctGuesses[user.username]}\n`;
+                    }
+                    io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, resultMessage));
+
                 }, 10000);
 
                 for(let i=0; i<usersInTurnOrder.length; i++){
                     console.log(usersInTurnOrder[i].username, correctGuesses[usersInTurnOrder[i].username]);
-                    // console.log(usersInTurnOrder[i].username, correctGuesses[i]);
                 }
 
                 clearInterval(gameLoop);    
+
             }
 
         }, 10000);
@@ -151,11 +163,11 @@ io.on('connection', socket => {
         var p = 0;
         if(message === currentRandomWord){
             console.log("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-            correctGuesses[currentTurnIndex] = 500;
-            if(totalScore[currentTurnIndex] === 0)
-                totalScore[currentTurnIndex] = 500;
+            correctGuesses[user.username] += 500;
+            if(totalScore[user.username] === 0)
+                totalScore[user.username] = 500;
             else
-                totalScore[currentTurnIndex] += 500;
+                totalScore[user.username] += 500;
             p=1;
             msg = `${user.username} guessed it right !!`;
         }
