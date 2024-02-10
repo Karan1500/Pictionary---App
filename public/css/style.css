@@ -38,6 +38,14 @@ a {
 	font-size: 17px;
 }
 
+.leave{
+    margin-right: 1rem;
+}
+
+.buttons{
+    display: flex;
+}
+
 .create-room-btn{
 	margin-bottom: 2rem;
 }

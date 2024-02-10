@@ -17,6 +17,7 @@ var usersInTurnOrder = [];
 var currentTurnIndex = 0;
 var currentRoom=0;
 var word = 'Apple';
+var round = 0;
 
 let currentRandomWord = '';
 let correctGuesses = {};
@@ -55,6 +56,7 @@ io.on('connection', socket => {
     function startGameLoop(room) {
 
         clearCanvasFunc();
+        round = 1;
         currentTurnIndex = 0;
         correctGuesses = {};
         console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
@@ -80,10 +82,21 @@ io.on('connection', socket => {
             io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
             io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
 
-            if(currentTurnIndex < usersInTurnOrder.length - 1)
+            if(currentTurnIndex === usersInTurnOrder.length - 1){
+                var resultMessage = '';
+                for(const user of usersInTurnOrder)
+                {
+                    resultMessage += `${user.username} : ${correctGuesses[user.username]}\n`;
+                }
+                io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 3);
+                io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, resultMessage));
+
+            }
+
+            if(round<4)
                 nextTurn(room);
 
-            if (currentTurnIndex === usersInTurnOrder.length - 1) {
+            if (round === 4) {
                 setTimeout(() => {
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 2);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, `The word was ${word}`));
@@ -98,9 +111,9 @@ io.on('connection', socket => {
 
                 }, 10000);
 
-                for(let i=0; i<usersInTurnOrder.length; i++){
-                    console.log(usersInTurnOrder[i].username, correctGuesses[usersInTurnOrder[i].username]);
-                }
+                // for(let i=0; i<usersInTurnOrder.length; i++){
+                //     console.log(usersInTurnOrder[i].username, correctGuesses[usersInTurnOrder[i].username]);
+                // }
 
                 clearInterval(gameLoop);    
 
@@ -112,7 +125,9 @@ io.on('connection', socket => {
     function nextTurn(room) {
         clearCanvasFunc();
         if (usersInTurnOrder.length > 0) {
-            currentTurnIndex ++ ;
+            currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
+            if(currentTurnIndex === usersInTurnOrder.length - 1)
+                round++;
             console.log('Its me');
             console.log(currentTurnIndex, usersInTurnOrder[currentTurnIndex]);
             io.to(room).emit('nextTurn');
