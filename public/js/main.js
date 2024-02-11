@@ -2,7 +2,7 @@ const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
-const srartGame  = document.getElementById('startGame');
+const startGame = document.getElementById('startGame');
 const randWord = document.getElementById('wordToGuess');
 
 let { username, room, start } = Qs.parse(location.search, {
@@ -23,7 +23,7 @@ if (!room) {
 
 startGame.addEventListener('click', funcStart);
 
-function funcStart(){
+function funcStart() {
     socket.emit('startTheGame', 1);
 }
 
@@ -76,17 +76,13 @@ function outputMessage(message) {
     document.querySelector('.chat-messages').appendChild(div);
     if (colorDiv === 1) {
         div.style.backgroundColor = 'rgb(0, 255, 0)';
-    } 
-    else if(colorDiv === 0){
+    } else if (colorDiv === 0) {
         div.style.backgroundColor = 'rgb(251, 143, 143)';
-    }
-    else if(colorDiv === 2){
+    } else if (colorDiv === 2) {
         div.style.backgroundColor = 'yellow';
-    }
-    else if(colorDiv === 3){
+    } else if (colorDiv === 3) {
         div.style.backgroundColor = 'rgb(0, 255, 251)';
-    }
-    else if(colorDiv === 4){
+    } else if (colorDiv === 4) {
         div.style.backgroundColor = '#fff';
     }
 }
@@ -145,7 +141,7 @@ socket.on('getData', data => {
     context.moveTo(data.x, data.y);
 });
 
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("drawingCanvas");
     const context = canvas.getContext("2d");
     const colorSelector = document.getElementById("colorSelector");
@@ -170,10 +166,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
         console.log("Next person's turn to draw.");
     });
 
-    function startDrawing(e){
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    function startDrawing(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
         if (isMyTurn) {
             isDrawing = true;
             socket.emit('mouseDown', { x, y });
@@ -183,36 +179,36 @@ document.addEventListener("DOMContentLoaded", ()=>{
         }
     }
 
-    function stopDrawing(){
-      isDrawing = false;
-      context.beginPath();
+    function stopDrawing() {
+        isDrawing = false;
+        context.beginPath();
     }
 
-    function draw(e){
-      if(!isDrawing)
-        return;
+    function draw(e) {
+        if (!isDrawing)
+            return;
 
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-      context.lineWidth = sizeSelector.value;
-      context.lineCap = "round";
-      context.strokeStyle = colorSelector.value;
+        context.lineWidth = sizeSelector.value;
+        context.lineCap = "round";
+        context.strokeStyle = colorSelector.value;
 
-      context.lineTo(x, y);
-      context.stroke();
-      context.beginPath();
-      context.moveTo(x, y);
-      
-      const p = context.lineWidth;
-      const q = context.strokeStyle;
-      socket.emit("draw", {x, y, p, q});
+        context.lineTo(x, y);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(x, y);
+
+        const p = context.lineWidth;
+        const q = context.strokeStyle;
+        socket.emit("draw", { x, y, p, q });
     }
 
-    function clearCanvas(){
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      socket.emit('clearCanvas', null);
+    function clearCanvas() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        socket.emit('clearCanvas', null);
     }
 });
 
@@ -220,9 +216,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const menuBtn = document.querySelector('.menu-btn');
     const chatSidebar = document.querySelector('.chat-sidebar');
 
-    // Add event listener to the menu button
     menuBtn.addEventListener('click', function () {
-        // Toggle the 'show-sidebar' class on the chat-main element
         document.querySelector('.chat-main').classList.toggle('show-sidebar');
     });
 });
+
+// Add this function to adjust canvas dimensions on window resize
+function adjustCanvasSize() {
+    const canvas = document.getElementById("drawingCanvas");
+    const canvasContainer = document.querySelector(".canvas-container");
+    canvas.width = canvasContainer.offsetWidth;
+    canvas.height = canvasContainer.offsetHeight;
+}
+
+// Add this event listener to adjust canvas size when the window is resized
+window.addEventListener("resize", adjustCanvasSize);
+
+// Call the adjustCanvasSize function once when the page loads to set initial dimensions
+adjustCanvasSize();
