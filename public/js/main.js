@@ -223,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Add this function to adjust canvas dimensions on window resize
 function adjustCanvasSize() {
     const canvas = document.getElementById("drawingCanvas");
     const canvasContainer = document.querySelector(".canvas-container");
@@ -231,8 +230,6 @@ function adjustCanvasSize() {
     canvas.height = canvasContainer.offsetHeight;
 }
 
-// Add this event listener to adjust canvas size when the window is resized
 window.addEventListener("resize", adjustCanvasSize);
 
-// Call the adjustCanvasSize function once when the page loads to set initial dimensions
 adjustCanvasSize();

@@ -16,7 +16,7 @@ const botName = 'Pen&Play Bot ';
 var usersInTurnOrder = [];
 var currentTurnIndex = 0;
 var currentRoom=0;
-var word = 'Apple';
+var word = '_________';
 var round = 0;
 
 let currentRandomWord = '';
@@ -62,7 +62,7 @@ io.on('connection', socket => {
         totalScore = {};
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
-        var things = ['Rock', 'Paper', 'Scissor'];
+        var things = ['Rock', 'Paper', 'Scissor', 'Orange', 'Coconut', 'Banana', 'Car', 'Truck', 'Necklace', 'Umbrella', 'Bicycle', 'Chocolate', 'Watermelon', 'Candy', 'Hospital'];
         word = things[Math.floor(Math.random() * things.length)];
         currentRandomWord = word.toLowerCase();
         const letters = word.length;

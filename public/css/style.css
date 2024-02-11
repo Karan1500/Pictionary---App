@@ -107,16 +107,14 @@ a {
 
 .chat-messages {
     padding: 30px;
-    height: 510px; /* Set a fixed height for the chat messages container */
-    overflow-y: auto; /* Enable vertical scrolling */
+    height: 510px; 
+    overflow-y: auto; 
 }
 .chat-messages .message {
 	padding: 10px;
 	margin-bottom: 15px;
 	background-color: var(--light-color);
 	border-radius: 5px;
-	/* color: rgb(0, 255, 0); */
-	/* color: rgb(251, 143, 143) */
 }
 
 .chat-messages .message .meta {
@@ -256,7 +254,7 @@ a {
     }
 
     .chat-sidebar {
-        display: none; /* Hide users column by default */
+        display: none; 
         position: fixed;
         top: 0;
         left: 0;
@@ -269,19 +267,23 @@ a {
     }
 
     .chat-main.show-sidebar .chat-sidebar {
-        display: block; /* Show users column when menu is opened */
+        display: block; 
     }
 
     .chat-main.hide-chat .chat-form-container {
-        display: none; /* Hide chat column when menu is opened */
+        display: none; 
     }
 
     .chat-header .btn {
-        display: none; /* Hide start game and leave room buttons */
+        font-size: small;
+        padding: 2px;
+        margin-left: 5px;
+        margin-right: 5px;
+        text-align: center;
     }
 
     .chat-header .open-chat-btn {
-        display: block; /* Show open chat button */
+        display: block; 
     }
 
     .chat-form-container {
@@ -310,11 +312,11 @@ a {
     }
 
     .open-chat-btn i {
-        transform: rotate(90deg); /* Rotate icon */
+        transform: rotate(90deg);
     }
 
     .chat-messages {
-        height: calc(100% - 160px); /* Adjust height of messages container */
+        height: calc(100% - 160px);
     }
 
     .new {
@@ -322,15 +324,14 @@ a {
     }
 
     .drawing-column {
-        width: 100%; /* Full width for drawing column */
+        width: 100%; 
     }
 
     .word-display h3 {
         margin-left: 0;
-        text-align: center; /* Center align word display */
+        text-align: center; 
     }
 }
-
 
 .menu-btn {
     background: none;
@@ -343,6 +344,6 @@ a {
 
 @media only screen and (min-width: 768px) {
     .menu-btn {
-        display: none; /* Hide menu button on larger screens */
+        display: none; 
     }
 }
