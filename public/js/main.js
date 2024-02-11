@@ -172,6 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const y = e.clientY - rect.top;
         if (isMyTurn) {
             isDrawing = true;
+            context.beginPath();
+            context.moveTo(x, y);
             socket.emit('mouseDown', { x, y });
             draw(e);
         } else {
