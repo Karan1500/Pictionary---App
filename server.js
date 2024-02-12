@@ -143,13 +143,13 @@ io.on('connection', socket => {
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('msgStatus', 4);
                     io.to(usersInTurnOrder[currentTurnIndex].room).emit('message', formatMessage(botName, winnerMessage));
 
-                }, 10000);
+                }, 20000);
 
                 clearInterval(gameLoop);    
 
             }
 
-        }, 10000);
+        }, 20000);
     }
 
     function nextTurn(room) {
@@ -188,10 +188,6 @@ io.on('connection', socket => {
         const data = 1;
         socket.emit('clearCanvasData', data);
         socket.broadcast.emit('clearCanvasData', data);
-    }
-
-    function allUsersFinishedDrawing(room) {
-        return currentTurnIndex >= usersInTurnOrder.length;
     }
 
     socket.on('draw', data => {

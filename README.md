@@ -9,7 +9,7 @@ The work completed till now comprises:
 - Development of the chat application which enables the users in a room to chat with each other and guess the word depicted by other users by drawing on the canvas.
 - Create room functionality and Join room functionality.
 - Display the users in a room functionality.
-- Turn-based Gameplay added
+- Turn-based Gameplay added.
 - Round-based Gameplay functionality added.
 - Score calculation functionality added.
 - Winner declaration added.
