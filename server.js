@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
+const randomWordSlugs= require('random-word-slugs');
 const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users');
 
 const app = express();
@@ -28,6 +29,12 @@ io.on('connection', socket => {
     socket.on('joinRoom', ({ username, room }) => {
 
         const user = userJoin(socket.id, username, room);
+
+        for(const member of usersInTurnOrder){
+            if(member.username === user.username){
+                socket.disconnect(true);
+            }
+        }
 
         socket.join(user.room);
 
@@ -56,14 +63,21 @@ io.on('connection', socket => {
     function startGameLoop(room) {
 
         clearCanvasFunc();
+        usersInTurnOrder = getRoomUsers(room);
         round = 1;
         currentTurnIndex = 0;
         correctGuesses = {};
         totalScore = {};
         io.to(usersInTurnOrder[currentTurnIndex].id).emit('yourTurn');
         const currentUser = usersInTurnOrder[currentTurnIndex];
-        var things = ['Rock', 'Paper', 'Scissor', 'Orange', 'Coconut', 'Banana', 'Car', 'Truck', 'Necklace', 'Umbrella', 'Bicycle', 'Chocolate', 'Watermelon', 'Candy', 'Hospital'];
-        word = things[Math.floor(Math.random() * things.length)];
+        const totalSlugs = randomWordSlugs.generateSlug(1, {
+            partsOfSpeech: ["noun"],
+            categories: {
+              adjective: ["color"],
+              noun: ["animals", "food", "sports", "transportation"],
+            },
+          });
+        word = totalSlugs;
         currentRandomWord = word.toLowerCase();
         const letters = word.length;
         io.to(currentUser.id).emit('displayWord', word);
@@ -140,15 +154,23 @@ io.on('connection', socket => {
 
     function nextTurn(room) {
         clearCanvasFunc();
+        usersInTurnOrder = getRoomUsers(room);
         if (usersInTurnOrder.length > 0) {
             currentTurnIndex = (currentTurnIndex + 1) % usersInTurnOrder.length;
             if(currentTurnIndex === usersInTurnOrder.length - 1)
                 round++;
             io.to(room).emit('nextTurn');
             setTimeout(() => {
+                clearCanvasFunc();
                 const currentUser = usersInTurnOrder[currentTurnIndex];
-                var things = ['Rock', 'Paper', 'Scissor'];
-                word = things[Math.floor(Math.random() * things.length)];
+                const totalSlugs = randomWordSlugs.generateSlug(1, {
+                    partsOfSpeech: ["noun"],
+                    categories: {
+                      adjective: ["color"],
+                      noun: ["animals", "food", "sports", "transportation"],
+                    },
+                  });
+                word = totalSlugs;
                 currentRandomWord = word.toLowerCase();
                 const letters = word.length;
                 io.to(currentUser.id).emit('displayWord', word);
