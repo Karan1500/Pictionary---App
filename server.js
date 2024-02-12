@@ -217,8 +217,6 @@ io.on('connection', socket => {
                 p=1;
                 msg = `${user.username} guessed it right !!`;
             }
-            else    
-                correctGuesses[user.username] = 0;
 
             io.to(user.room).emit('msgStatus', p);
             io.to(user.room).emit('message', formatMessage(`${user.username} `, msg));
