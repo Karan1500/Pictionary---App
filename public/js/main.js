@@ -198,10 +198,10 @@ document.addEventListener("DOMContentLoaded", () => {
         context.lineCap = "round";
         context.strokeStyle = colorSelector.value;
 
-        context.lineTo(x, y);
+        // context.lineTo(x, y);
         // context.stroke();
         // context.beginPath();
-        context.moveTo(x, y);
+        // context.moveTo(x, y);
 
         const p = context.lineWidth;
         const q = context.strokeStyle;
