@@ -199,8 +199,8 @@ document.addEventListener("DOMContentLoaded", () => {
         context.strokeStyle = colorSelector.value;
 
         context.lineTo(x, y);
-        context.stroke();
-        context.beginPath();
+        // context.stroke();
+        // context.beginPath();
         context.moveTo(x, y);
 
         const p = context.lineWidth;
