@@ -209,7 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function clearCanvas() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        if(isMyTurn)
+            context.clearRect(0, 0, canvas.width, canvas.height);
         socket.emit('clearCanvas', null);
     }
 });
